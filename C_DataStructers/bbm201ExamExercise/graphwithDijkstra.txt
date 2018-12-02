@@ -1,0 +1,46 @@
+        class Graph
+    {
+        public: 
+            vector<int> nodes ; 
+            vector<vector<pair<int,int> > > edges ; 
+            void addNode() 
+            {
+                nodes.push_back(nodes.size()) ; 
+                vector<pair<int,int> > temp ; edges.push_back(temp);
+            }
+            void addEdge(int n1, int n2, int w)
+            {
+                edges[n1].push_back(make_pair(n2,w)) ; 
+            }
+            pair<vector<int>, vector<int> > shortest(int source) // shortest path djkitra's
+            {
+                vector<int> dist(nodes.size()) ; 
+                fill(dist.begin(), dist.end(), INF) ; dist[source] = 0 ; 
+                vector<int> pred(nodes.size()) ; 
+                fill(pred.begin(), pred.end(), -1) ; 
+                for(int i=0; i<(int)edges[source].size(); i++)
+                {
+                    dist[edges[source][i].first] = edges[source][i].second ; 
+                    pred[edges[source][i].first] = source  ; 
+                }
+                set<pair<int,int> > pq ; 
+                for(int i=0; i<(int)nodes.size(); i++)
+                    pq.insert(make_pair(dist[i],i)) ; 
+                while(!pq.empty())
+                {
+                    pair<int,int> item = *pq.begin() ; 
+                    pq.erase(pq.begin()) ; 
+                    int v = item.second ; 
+                    for(int i=0; i<(int)edges[v].size(); i++)
+                    {
+                        if(dist[edges[v][i].first] > dist[v] + edges[v][i].second)
+                        {
+                            pq.erase(std::find(pq.begin(), pq.end(),make_pair(dist[edges[v][i].first],edges[v][i].first))) ; 
+                            pq.insert(make_pair(dist[v] + edges[v][i].second,edges[v][i].first)) ; 
+                            dist[edges[v][i].first] = dist[v] + edges[v][i].second ; 
+                            pred[i] = edges[v][i].first ; 
+                        }
+                    }
+                }
+                return make_pair(dist,pred) ; 
+            }
